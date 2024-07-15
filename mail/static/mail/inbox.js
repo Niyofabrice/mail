@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Send email
 
-  document.querySelector('#compose-form').addEventListener('submit', (event) => {
+  document.querySelector('#compose-form').addEventListener('submit', () => {
     const recipients = document.querySelector('#compose-recipients').value;
     const subject = document.querySelector('#compose-subject').value;
     const body = document.querySelector('#compose-body').value;
@@ -93,29 +93,30 @@ function load_email(email_id){
       <p><strong>Subject:</strong> ${result.subject}</p>
       <p><strong>Timestamp:</strong> ${result.timestamp}</p>
       <p>${result.body}</p>
-      <p>${result.archived ? '<button>archive</button>' : '<button>unarchive</button>'}</p>`;
+      <p>archived: ${result.archived}</p>
+      <p>${result.archived ? '<button>unarchive</button>' : '<button>archive</button>'}</p>`;
+      //<p>${!result.archived ? '<button>unarchive</button>' : '<button>archive</button>'}</p>
       element.querySelector('button').addEventListener('click', remove_add_archive)
       document.querySelector('#emails-view').innerHTML = '';
       document.querySelector('#emails-view').appendChild(element);
+
+      function remove_add_archive(){
+        if(result.archived){
+          fetch(`emails/${email_id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                archived: false
+            })
+          })
+        }
+        else{
+          fetch(`emails/${email_id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                archived: true
+            })
+          })
+        }
+      }
   })
-}
-
-
-function remove_add_archive(){
-  if(result.archived){
-    fetch(`emails/${email_id}`, {
-      method: 'PUT',
-      body: JSON.stringify({
-          archived: false
-      })
-    })
-  }
-  else{
-    fetch(`emails/${email_id}`, {
-      method: 'PUT',
-      body: JSON.stringify({
-          archived: true
-      })
-    })
-  }
 }
